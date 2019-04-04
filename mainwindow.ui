@@ -35,7 +35,7 @@
     </property>
     <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="1">
-      <widget class="QLineEdit" name="lineEdit">
+      <widget class="QLineEdit" name="folderDisplay">
        <property name="enabled">
         <bool>false</bool>
        </property>
@@ -48,14 +48,14 @@
       </widget>
      </item>
      <item row="0" column="2">
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="browseButton">
        <property name="text">
         <string>Browse</string>
        </property>
       </widget>
      </item>
      <item row="1" column="2">
-      <widget class="QPushButton" name="pushButton_2">
+      <widget class="QPushButton" name="saveButton">
        <property name="text">
         <string>Save</string>
        </property>
@@ -69,7 +69,7 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QLineEdit" name="lineEdit_2"/>
+      <widget class="QLineEdit" name="filenameDisplay"/>
      </item>
      <item row="1" column="0">
       <widget class="QLabel" name="label_2">
@@ -122,7 +122,7 @@
      <string>PL</string>
     </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>460</x>
@@ -133,14 +133,14 @@
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QPushButton" name="pushButton_5">
+      <widget class="QPushButton" name="acqINButton">
        <property name="text">
         <string>Sample in beam</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_6">
+      <widget class="QPushButton" name="acqOUTButton">
        <property name="text">
         <string>Sample out of beam</string>
        </property>
@@ -148,7 +148,7 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>100</x>
@@ -159,14 +159,14 @@
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QPushButton" name="pushButton_3">
+      <widget class="QPushButton" name="acqBckgButton">
        <property name="text">
         <string>Acquire bckg</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_4">
+      <widget class="QPushButton" name="acqLaserButton">
        <property name="text">
         <string>Laser in</string>
        </property>
@@ -174,7 +174,7 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>320</x>
@@ -185,7 +185,7 @@
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QPushButton" name="pushButton_7">
+      <widget class="QPushButton" name="calcPLQEButton">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
          <horstretch>0</horstretch>
@@ -198,7 +198,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit_3">
+      <widget class="QLineEdit" name="PLQEdisplay">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -209,7 +209,7 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>50</x>
@@ -227,10 +227,10 @@
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QSpinBox" name="spinBox"/>
+      <widget class="QSpinBox" name="avgsSpinBox"/>
      </item>
      <item row="2" column="0">
-      <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
+      <widget class="QDoubleSpinBox" name="intSpinBox"/>
      </item>
      <item row="1" column="1">
       <widget class="QLabel" name="label_4">
@@ -247,7 +247,7 @@
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QCheckBox" name="checkBox">
+      <widget class="QCheckBox" name="connectBox">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -280,7 +280,7 @@
  <resources/>
  <connections>
   <connection>
-   <sender>pushButton</sender>
+   <sender>browseButton</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>browseSlot()</slot>
@@ -296,7 +296,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_3</sender>
+   <sender>acqBckgButton</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>acquireBckgSlot()</slot>
@@ -312,7 +312,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_4</sender>
+   <sender>acqLaserButton</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>acquireLaserSlot()</slot>
@@ -328,7 +328,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_7</sender>
+   <sender>calcPLQEButton</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>calcPLQESlot()</slot>
@@ -344,7 +344,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_2</sender>
+   <sender>saveButton</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>savefileSlot()</slot>
@@ -360,7 +360,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_5</sender>
+   <sender>acqINButton</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>acquireINSlot()</slot>
@@ -376,7 +376,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_6</sender>
+   <sender>acqOUTButton</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>acquireOUTSlot()</slot>
@@ -392,7 +392,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>checkBox</sender>
+   <sender>connectBox</sender>
    <signal>toggled(bool)</signal>
    <receiver>MainWindow</receiver>
    <slot>connectSpecSlot(bool)</slot>
