@@ -77,8 +77,13 @@ class Ui_MainWindow(QObject):
         self.gridLayout_2.addWidget(self.label_3, 1, 0, 1, 1)
         self.avgsSpinBox = QtWidgets.QSpinBox(self.centralwidget)
         self.avgsSpinBox.setObjectName("avgsSpinBox")
+        self.avgsSpinBox.setRange(0,100000)
+        self.avgsSpinBox.setMinimum(1)
         self.gridLayout_2.addWidget(self.avgsSpinBox, 2, 1, 1, 1)
         self.intSpinBox = QtWidgets.QDoubleSpinBox(self.centralwidget)
+        self.intSpinBox.setRange(3.8,10000)
+        self.intSpinBox.setDecimals(1)
+        self.intSpinBox.setValue(100)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -198,7 +203,7 @@ class Ui_MainWindow(QObject):
         self.acqBckgButton.setText(_translate("MainWindow", "Acquire bckg"))
         self.acqLaserButton.setText(_translate("MainWindow", "Laser in"))
         self.calcPLQEButton.setText(_translate("MainWindow", "Calculate PLQE"))
-        self.groupBox_LaserPlot.setTitle(_translate("MainWindow", "Laser"))
+        self.groupBox_LaserPlot.setTitle(_translate("MainWindow", "Spectra"))
 
         
     def get_lbbounds(self):
