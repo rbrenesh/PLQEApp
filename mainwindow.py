@@ -15,6 +15,8 @@ class Ui_MainWindow(QObject):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 600)
+        pg.setConfigOption('background', 'w')
+        pg.setConfigOption('foreground', 'k')
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout_3 = QtWidgets.QGridLayout(self.centralwidget)
@@ -180,6 +182,9 @@ class Ui_MainWindow(QObject):
         self.plt1 = pg.PlotWidget()
         self.plt2 = pg.PlotWidget()
 
+        self.legend = self.plt2.addLegend()
+        self.legend.anchor((0,0), (0,0))
+
         self.groupBox_LaserPlot.layout().addWidget(self.plt1,stretch=1)
         self.groupBox_LaserPlot.layout().addWidget(self.plt2,stretch=1)
 
@@ -209,16 +214,33 @@ class Ui_MainWindow(QObject):
 
 
     def get_lbbounds(self):
-        return lb.getRegion() #min_X, max_X
+        return self.lb.getRegion() #min_X, max_X
 
     def get_rbbounds(self):
-        return rb.getRegion() #min_X, max_X
+        return self.rb.getRegion() #min_X, max_X
     
     def plotlaser(self,x,y):
-        self.plt1.plot(x,y)
+        try:
+            self.laser.clear()
+        except AttributeError:
+            pass
+        self.laser = self.plt1.plot(x,y,name="Laser",pen='k')
 
-    def plotPL(self,x,y):
-        self.plt2.plot(x,y)
+    def plotINPL(self,x,y):
+        try:
+            self.IN.clear()
+            self.legend.removeItem(self.IN.name())
+        except AttributeError:
+            pass
+        self.IN = self.plt2.plot(x,y,name='IN',pen='r')
+
+    def plotOUTPL(self,x,y):
+        try:
+            self.OUT.clear()
+            self.legend.removeItem(self.OUT.name())
+        except AttributeError:
+            pass
+        self.OUT = self.plt2.plot(x,y,name='OUT',pen='b')
 
     @pyqtSlot( )
     def browseSlot( self ):

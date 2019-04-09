@@ -4,6 +4,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QObject, pyqtSlot
 from mainwindow import Ui_MainWindow
 from model import Model
+from seabreeze.cseabreeze.wrapper import SeaBreezeError
 import sys
 
 class MainWindowUIClass( Ui_MainWindow ):
@@ -56,6 +57,21 @@ class MainWindowUIClass( Ui_MainWindow ):
         ''' Called when the user enters a string in the line edit and
         presses the ENTER key.
         '''
+        try:
+            if self.model.connected:
+
+                self.res = self.model.calcPLQE(self.get_lbbounds(),self.get_rbbounds())
+                # self.PLQEdisplay.setvalue(self.res[0])
+                if self.res[1]:
+                    self.PLQEdisplay.setText(str(self.res[0]))
+                else:
+                    self.PLQEerrorDialog()
+            else:
+                self.noSpecDialog()
+        except (SeaBreezeError,AttributeError):
+            self.noSpecDialog()
+            # self.debugPrint(str(self.res[0]))
+
         self.debugPrint( "Calc PLQE key pressed" )
 
     # slot
@@ -84,7 +100,7 @@ class MainWindowUIClass( Ui_MainWindow ):
         if success == False:
             self.noSpecDialog()
         else:
-            self.plotlaser(self.wav,self.model.LaserSpec)
+            self.plotlaser(self.model.wav,self.model.LaserSpec)
         self.debugPrint( "Acquire Laser button pressed" )
     # slot
     def browseSlot( self ):
@@ -95,15 +111,15 @@ class MainWindowUIClass( Ui_MainWindow ):
         else:
             self.dir_ = QtGui.QFileDialog.getExistingDirectory(None, 'Select a folder:', '/', QtGui.QFileDialog.ShowDirsOnly)
 
-        self.folderDisplay.setText(dir_)
-        self.debugPrint(dir_)
+        self.folderDisplay.setText(self.dir_)
+        self.debugPrint(self.dir_)
 
     def acquireOUTSlot( self ):
         success = self.model.acqOUTSpec(self.intSpinBox.value(), self.avgsSpinBox.value())
         if success == False:
             self.noSpecDialog()
         else:
-            self.plotpl(self.wav,self.model.OUTSpec)
+            self.plotOUTPL(self.model.wav,self.model.OUTSpec)
         self.debugPrint("Acquire Out button pressed")
 
     def acquireINSlot( self ):
@@ -111,7 +127,7 @@ class MainWindowUIClass( Ui_MainWindow ):
         if success == False:
             self.noSpecDialog()
         else:
-            self.plotpl(self.wav,self.model.INSpec)
+            self.plotINPL(self.model.wav,self.model.INSpec)
         self.debugPrint("Acquire In button pressed")
 
     def acquireBckgSlot( self ):
@@ -146,6 +162,13 @@ class MainWindowUIClass( Ui_MainWindow ):
         error_dialog = QtGui.QMessageBox()
         error_dialog.setIcon(QtGui.QMessageBox.Critical)
         error_dialog.setText('No spectrometer connected')
+        error_dialog.setWindowTitle('Error')
+        error_dialog.exec_()
+
+    def PLQEerrorDialog(self):
+        error_dialog = QtGui.QMessageBox()
+        error_dialog.setIcon(QtGui.QMessageBox.Critical)
+        error_dialog.setText('Please acquire all spectra first')
         error_dialog.setWindowTitle('Error')
         error_dialog.exec_()
 
