@@ -80,8 +80,11 @@ class MainWindowUIClass( Ui_MainWindow ):
         self.debugPrint( "Save button pressed" )
 
     def acquireLaserSlot( self ):
-        self.model.acqLaserSpec(self.intSpinBox.value(), self.avgsSpinBox.value())
-        self.plotlaser(self.wav,self.model.LaserSpec)
+        success = self.model.acqLaserSpec(self.intSpinBox.value(), self.avgsSpinBox.value())
+        if success == False:
+            self.noSpecDialog()
+        else:
+            self.plotlaser(self.wav,self.model.LaserSpec)
         self.debugPrint( "Acquire Laser button pressed" )
     # slot
     def browseSlot( self ):
@@ -96,17 +99,25 @@ class MainWindowUIClass( Ui_MainWindow ):
         self.debugPrint(dir_)
 
     def acquireOUTSlot( self ):
-        self.model.acqOUTSpec(self.intSpinBox.value(), self.avgsSpinBox.value())
-        self.plotpl(self.wav,self.model.OUTSpec)
+        success = self.model.acqOUTSpec(self.intSpinBox.value(), self.avgsSpinBox.value())
+        if success == False:
+            self.noSpecDialog()
+        else:
+            self.plotpl(self.wav,self.model.OUTSpec)
         self.debugPrint("Acquire Out button pressed")
 
     def acquireINSlot( self ):
-        self.model.acqINSpec(self.intSpinBox.value(), self.avgsSpinBox.value())
-        self.plotpl(self.wav,self.model.INSpec)
+        success = self.model.acqINSpec(self.intSpinBox.value(), self.avgsSpinBox.value())
+        if success == False:
+            self.noSpecDialog()
+        else:
+            self.plotpl(self.wav,self.model.INSpec)
         self.debugPrint("Acquire In button pressed")
 
     def acquireBckgSlot( self ):
-        self.model.acqBckg(self.intSpinBox.value(), self.avgsSpinBox.value())
+        success = self.model.acqBckg(self.intSpinBox.value(), self.avgsSpinBox.value())
+        if success == False:
+            self.noSpecDialog()
         self.debugPrint("Acquire background button pressed")
 
     def connectSpecSlot( self ):
@@ -115,7 +126,7 @@ class MainWindowUIClass( Ui_MainWindow ):
         if success == False:
             self.connectBox.setChecked(False)
             self._toggle= False
-            self.connectionDialog()
+            self.connectionErrorDialog()
         self.debugPrint("connectSpecSlot Checked")
 
     def disconnectSpecSlot( self ):
@@ -123,7 +134,7 @@ class MainWindowUIClass( Ui_MainWindow ):
 
         self.debugPrint("connectSpecSlot Unchecked")
 
-    def connectionDialog(self):
+    def connectionErrorDialog(self):
 
         error_dialog = QtGui.QMessageBox()
         error_dialog.setIcon(QtGui.QMessageBox.Critical)
@@ -131,12 +142,19 @@ class MainWindowUIClass( Ui_MainWindow ):
         error_dialog.setWindowTitle('Error')
         error_dialog.exec_()
 
+    def noSpecDialog(self):
+        error_dialog = QtGui.QMessageBox()
+        error_dialog.setIcon(QtGui.QMessageBox.Critical)
+        error_dialog.setText('No spectrometer connected')
+        error_dialog.setWindowTitle('Error')
+        error_dialog.exec_()
 
 
-def AppExec(app):
+def AppExec(app,ui):
     app.exec_()
 
     #handle the spectrometer disconnect here
+    ui.model.disconnectSpec()
 
     # print("you just closed the pyqt window!!! you are awesome!!!")
 
@@ -153,7 +171,7 @@ def main():
     ui = MainWindowUIClass()
     ui.setupUi(MainWindow)
     MainWindow.show()
-    sys.exit(AppExec(app))
+    sys.exit(AppExec(app,ui))
     # sys.exit(app.exec_())
 
 main()

@@ -59,7 +59,7 @@ class Model:
 
             self.bckg = self.bckg/avgs
             return True
-        except SeaBreezeError:
+        except (SeaBreezeError,AttributeError):
             return False
 
     def acqLaserSpec(self,int_time, avgs):
@@ -76,7 +76,7 @@ class Model:
             else:
                 self.LaserSpec = self.LaserSpec/avgs
             return True
-        except SeaBreezeError:
+        except (SeaBreezeError,AttributeError):
             return False
 
     def acqINSpec(self,int_time, avgs):
@@ -92,7 +92,7 @@ class Model:
             else:
                 self.INSpec = self.INSpec/avgs
             return True
-        except SeaBreezeError:
+        except (SeaBreezeError,AttributeError):
             return False
 
     def acqOUTSpec(self,int_time, avgs):
@@ -111,7 +111,7 @@ class Model:
 
 
             return True
-        except SeaBreezeError:
+        except (SeaBreezeError,AttributeError):
             return False
 
     def calcPLQE(self,minX_Laser,maxX_Laser,minX_PL,maxX_PL):
