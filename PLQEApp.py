@@ -80,7 +80,8 @@ class MainWindowUIClass( Ui_MainWindow ):
         self.debugPrint( "Save button pressed" )
 
     def acquireLaserSlot( self ):
-
+        self.model.acqLaserSpec(self.intSpinBox.value(), self.avgsSpinBox.value())
+        self.plotlaser(self.wav,self.model.LaserSpec)
         self.debugPrint( "Acquire Laser button pressed" )
     # slot
     def browseSlot( self ):
@@ -95,15 +96,17 @@ class MainWindowUIClass( Ui_MainWindow ):
         self.debugPrint(dir_)
 
     def acquireOUTSlot( self ):
-
+        self.model.acqOUTSpec(self.intSpinBox.value(), self.avgsSpinBox.value())
+        self.plotpl(self.wav,self.model.OUTSpec)
         self.debugPrint("Acquire Out button pressed")
 
     def acquireINSlot( self ):
-
+        self.model.acqINSpec(self.intSpinBox.value(), self.avgsSpinBox.value())
+        self.plotpl(self.wav,self.model.INSpec)
         self.debugPrint("Acquire In button pressed")
 
     def acquireBckgSlot( self ):
-
+        self.model.acqBckg(self.intSpinBox.value(), self.avgsSpinBox.value())
         self.debugPrint("Acquire background button pressed")
 
     def connectSpecSlot( self ):
@@ -122,10 +125,8 @@ class MainWindowUIClass( Ui_MainWindow ):
 
     def connectionDialog(self):
 
-        # error_dialog = QtWidgets.QErrorMessage()
         error_dialog = QtGui.QMessageBox()
         error_dialog.setIcon(QtGui.QMessageBox.Critical)
-
         error_dialog.setText('USB4000 Connection Failed')
         error_dialog.setWindowTitle('Error')
         error_dialog.exec_()

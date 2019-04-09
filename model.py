@@ -18,6 +18,7 @@ class Model:
         self.LaserSpec = None
         self.INSpec = None
         self.OUTSpec = None
+        self.wav = None
 
     def fileExists(self,directory,fileName):
         return os.path.isfile(directory+fileName)
@@ -35,6 +36,7 @@ class Model:
         try:
             devices = sb.list_devices()
             self.spec = sb.Spectrometer(devices[0])
+            self.wav = self.spec.wavelengths()
             return True
         except (SeaBreezeError,IndexError):
             return False
@@ -69,7 +71,10 @@ class Model:
             for i in range(avgs):
                 self.LaserSpec += self.spec.intensities()
 
-            self.LaserSpec = self.LaserSpec/avgs
+            if self.bckg != None:
+                self.LaserSpec = self.LaserSpec/avgs - self.bckg
+            else:
+                self.LaserSpec = self.LaserSpec/avgs
             return True
         except SeaBreezeError:
             return False
@@ -82,8 +87,10 @@ class Model:
 
             for i in range(avgs):
                 self.INSpec += self.spec.intensities()
-
-            self.INSpec = self.INSpec/avgs
+            if self.bckg != None:
+                self.INSpec = self.INSpec/avgs - self.bckg
+            else:
+                self.INSpec = self.INSpec/avgs
             return True
         except SeaBreezeError:
             return False
@@ -97,8 +104,16 @@ class Model:
             for i in range(avgs):
                 self.OUTSpec += self.spec.intensities()
 
-            self.OUTSpec = self.LaserSpec/avgs
+            if self.bckg != None:
+                self.OUTSpec = self.OUTSpec/avgs - self.bckg
+            else:
+                self.OUTSpec =  self.OUTSpec/avgs
+
+
             return True
         except SeaBreezeError:
             return False
+
+    def calcPLQE(self,minX_Laser,maxX_Laser,minX_PL,maxX_PL):
+        pass
 
