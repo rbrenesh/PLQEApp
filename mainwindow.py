@@ -114,7 +114,7 @@ class Ui_MainWindow(QObject):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.connectBox.sizePolicy().hasHeightForWidth())
         self.connectBox.setSizePolicy(sizePolicy)
-        self.connectBox.setCheckable(False)
+        self.connectBox.setCheckable(True)
         self.connectBox.setTristate(False)
         self.connectBox.setObjectName("connectBox")
         self.gridLayout_2.addWidget(self.connectBox, 0, 1, 1, 1)
@@ -171,7 +171,9 @@ class Ui_MainWindow(QObject):
         self.saveButton.clicked.connect(self.savefileSlot)
         self.acqINButton.clicked.connect(self.acquireINSlot)
         self.acqOUTButton.clicked.connect(self.acquireOUTSlot)
-        self.connectBox.toggled['bool'].connect(self.connectSpecSlot)
+        # self.connectBox.toggled['bool'].connect(self.connectSpecSlot)
+        # self.connectBox.stateChanged.connect(self.checkBoxState)
+        # self.connectBox.toggled['bool'].connect(self.connectSpecSlot)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
 
@@ -189,7 +191,7 @@ class Ui_MainWindow(QObject):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "PLQE App"))
         self.saveButton.setText(_translate("MainWindow", "Save"))
         self.label_2.setText(_translate("MainWindow", "Filename"))
         self.label.setText(_translate("MainWindow", "Folder"))
@@ -205,7 +207,7 @@ class Ui_MainWindow(QObject):
         self.calcPLQEButton.setText(_translate("MainWindow", "Calculate PLQE"))
         self.groupBox_LaserPlot.setTitle(_translate("MainWindow", "Spectra"))
 
-        
+
     def get_lbbounds(self):
         return lb.getRegion() #min_X, max_X
 
@@ -247,8 +249,13 @@ class Ui_MainWindow(QObject):
         pass
 
     @pyqtSlot( )
-    def connectSpecSlot( self ,bool):
+    def connectSpecSlot( self ):
         pass
+
+    @pyqtSlot( )
+    def disconnectSpecSlot( self ):
+        pass
+
 
 if __name__ == "__main__":
     import sys
