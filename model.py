@@ -27,7 +27,11 @@ class Model():
         self.n = 0
 
     def fileExists(self,directory,fileName):
-        return os.path.isfile(directory+'/'+fileName)
+        if ".txt" not in fileName:
+            savepath = directory + '/' + fileName + '.txt'
+        else:
+            savepath = directory + '/' + fileName
+        return os.path.isfile(savepath)
 
     
     def writeFile( self, directory,fileName):
