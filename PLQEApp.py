@@ -72,7 +72,7 @@ class MainWindowUIClass( Ui_MainWindow ):
             self.noSpecDialog()
             # self.debugPrint(str(self.res[0]))
 
-        self.debugPrint( "Calc PLQE key pressed" )
+        # self.debugPrint( "Calc PLQE key pressed" )
 
     # slot
     def savefileSlot( self ):
@@ -93,7 +93,7 @@ class MainWindowUIClass( Ui_MainWindow ):
             self.model.writeFile(self.dir_,self.fileName)
 
 
-        self.debugPrint( "Save button pressed" )
+        # self.debugPrint( "Save button pressed" )
 
     def acquireLaserSlot( self ):
         success = self.model.acqLaserSpec(self.intSpinBox.value(), self.avgsSpinBox.value())
@@ -101,7 +101,7 @@ class MainWindowUIClass( Ui_MainWindow ):
             self.noSpecDialog()
         else:
             self.plotlaser(self.model.wav,self.model.LaserSpec)
-        self.debugPrint( "Acquire Laser button pressed" )
+        # self.debugPrint( "Acquire Laser button pressed" )
     # slot
     def browseSlot( self ):
         ''' Called when the user presses the Browse button
@@ -112,7 +112,7 @@ class MainWindowUIClass( Ui_MainWindow ):
             self.dir_ = QtGui.QFileDialog.getExistingDirectory(None, 'Select a folder:', '/', QtGui.QFileDialog.ShowDirsOnly)
 
         self.folderDisplay.setText(self.dir_)
-        self.debugPrint(self.dir_)
+        # self.debugPrint(self.dir_)
 
     def acquireOUTSlot( self ):
         success = self.model.acqOUTSpec(self.intSpinBox.value(), self.avgsSpinBox.value())
@@ -120,7 +120,7 @@ class MainWindowUIClass( Ui_MainWindow ):
             self.noSpecDialog()
         else:
             self.plotOUTPL(self.model.wav,self.model.OUTSpec)
-        self.debugPrint("Acquire Out button pressed")
+        # self.debugPrint("Acquire Out button pressed")
 
     def acquireINSlot( self ):
         success = self.model.acqINSpec(self.intSpinBox.value(), self.avgsSpinBox.value())
@@ -128,27 +128,27 @@ class MainWindowUIClass( Ui_MainWindow ):
             self.noSpecDialog()
         else:
             self.plotINPL(self.model.wav,self.model.INSpec)
-        self.debugPrint("Acquire In button pressed")
+        # self.debugPrint("Acquire In button pressed")
 
     def acquireBckgSlot( self ):
         success = self.model.acqBckg(self.intSpinBox.value(), self.avgsSpinBox.value())
         if success == False:
             self.noSpecDialog()
-        self.debugPrint("Acquire background button pressed")
+        # self.debugPrint("Acquire background button pressed")
 
     def connectSpecSlot( self ):
         success = self.model.connectSpec()
-        self.debugPrint(str(success))
+        # self.debugPrint(str(success))
         if success == False:
             self.connectBox.setChecked(False)
             self._toggle= False
             self.connectionErrorDialog()
-        self.debugPrint("connectSpecSlot Checked")
+        # self.debugPrint("connectSpecSlot Checked")
 
     def disconnectSpecSlot( self ):
         success = self.model.disconnectSpec()
 
-        self.debugPrint("connectSpecSlot Unchecked")
+        # self.debugPrint("connectSpecSlot Unchecked")
 
     def connectionErrorDialog(self):
 
