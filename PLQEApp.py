@@ -3,7 +3,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QObject, pyqtSlot
 from mainwindow import Ui_MainWindow
-from model import Model
+from model import Model, NoSpectraToProcess
 from seabreeze.cseabreeze.wrapper import SeaBreezeError
 import sys
 
@@ -87,10 +87,16 @@ class MainWindowUIClass( Ui_MainWindow ):
             reply = QtGui.QMessageBox.question(self, 'Message', ovrwrite_msg, QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
 
             if reply == QtGui.QMessageBox.Yes:
-                self.model.writeFile(self.dir_,self.fileName)
+                try:
+                    self.model.writeFile(self.dir_,self.fileName)
+                except NoSpectraToProcess:
+                    self.PLQEerrorDialog()
 
         else:
-            self.model.writeFile(self.dir_,self.fileName)
+            try:
+                self.model.writeFile(self.dir_,self.fileName)
+            except NoSpectraToProcess:
+                self.PLQEerrorDialog()
 
 
         # self.debugPrint( "Save button pressed" )

@@ -9,6 +9,9 @@ import seabreeze.spectrometers as sb
 from seabreeze.cseabreeze.wrapper import SeaBreezeError
 from scipy.interpolate import interp1d
 
+class NoSpectraToProcess(Exception):
+    pass
+
 class Model():
     def __init__( self ):
         self.fileName = None
@@ -21,6 +24,7 @@ class Model():
         self.wav = None
         self.progress= 0
         self.connected = False
+        self.n = 0
 
     def fileExists(self,directory,fileName):
         return os.path.isfile(directory+'/'+fileName)
@@ -29,9 +33,16 @@ class Model():
     def writeFile( self, directory,fileName):
         #save a csv file with the spectra to the specified directory
         if type(self.LaserSpec)!=type(None) and type(self.INSpec)!=type(None) and type(self.OUTSpec)!=type(None):
-            pass
+            M = np.vstack((self.wav,self.LaserSpec,self.INSpec,self.OUTSpec)).T
+
+            if ".txt" not in fileName:
+                savepath = directory + '/' + fileName + '.txt'
+            else:
+                savepath = directory + '/' + fileName
+
+            np.savetxt(savepath,M,header= 'PLQE = {0:.1f} \n Wavelength(nm) Laser(counts) InBeam(counts) OutofBeam(counts)'.format(self.n))
         else:
-            pass
+            raise NoSpectraToProcess('Please acquire all spectra')
 
 
     def connectSpec(self):
@@ -158,9 +169,9 @@ class Model():
 
             # Calc PLQE
             A = 1 - np.trapz(lasercountfiltin)/np.trapz(lasercountfiltout)
-            n = 100*((np.trapz(plcountfiltin) - (1 - A)*np.trapz(plcountfiltout))/(np.trapz(lasercountfiltempty)*A))
-            n = round(n, 2)
-            return n, True
+            self.n = 100*((np.trapz(plcountfiltin) - (1 - A)*np.trapz(plcountfiltout))/(np.trapz(lasercountfiltempty)*A))
+            self.n = round(n, 2)
+            return self.n, True
         else:
             return None, False
 
