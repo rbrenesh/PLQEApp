@@ -37,7 +37,10 @@ class Model():
     def writeFile( self, directory,fileName):
         #save a csv file with the spectra to the specified directory
         if type(self.LaserSpec)!=type(None) and type(self.INSpec)!=type(None) and type(self.OUTSpec)!=type(None):
-            M = np.vstack((self.wav,self.LaserSpec,self.INSpec,self.OUTSpec)).T
+            try:
+                M = np.vstack((self.wav,self.LaserSpec-self.bckg,self.INSpec-self.bckg,self.OUTSpec-self.bckg)).T
+            except TypeError:
+                M = np.vstack((self.wav,self.LaserSpec,self.INSpec,self.OUTSpec)).T
 
             if ".txt" not in fileName:
                 savepath = directory + '/' + fileName + '.txt'
@@ -84,6 +87,13 @@ class Model():
             return False
 
     def acqLaserSpec(self,int_time, avgs):
+
+        dirname = os.path.dirname(__file__)
+        file_path = os.path.join(dirname, 'Intensity_Calibration.txt')
+        calibration = np.genfromtxt(file_path,skip_header=1)
+        wav_calib = calibration[:,0]
+        int_calib = calibration[:,1]
+        calib_factor = interp1d(wav_calib,int_calib)
         try:
         #Set integration time and initialize array to zero in order to average
             self.spec.integration_time_micros(int_time)
@@ -94,6 +104,11 @@ class Model():
 
             if type(self.bckg) != type(None):
                 self.LaserSpec = self.LaserSpec/avgs - self.bckg
+                # self.wav = self.spec.wavelengths()
+                # wav = self.wav[(self.wav>=350)&(self.wav<=1039.5)]
+
+                # self.LaserSpec = self.LaserSpec[(self.wav>=350)&(self.wav<=1039.5)]*calib_factor(wav)
+                # self.wav = self.wav[(self.wav>=350)&(self.wav<=1039.5)]
             else:
                 self.LaserSpec = self.LaserSpec/avgs
             return True
@@ -101,6 +116,13 @@ class Model():
             return False
 
     def acqINSpec(self,int_time, avgs):
+        dirname = os.path.dirname(__file__)
+        file_path = os.path.join(dirname, 'Intensity_Calibration.txt')
+        calibration = np.genfromtxt(file_path,skip_header=1)
+        wav_calib = calibration[:,0]
+        int_calib = calibration[:,1]
+        calib_factor = interp1d(wav_calib,int_calib)
+
         try:
         #Set integration time and initialize array to zero in order to average
             self.spec.integration_time_micros(int_time)
@@ -110,6 +132,11 @@ class Model():
                 self.INSpec += self.spec.intensities()
             if type(self.bckg) != type(None):
                 self.INSpec = self.INSpec/avgs - self.bckg
+                # self.wav = self.spec.wavelengths()
+                # wav = self.wav[(self.wav>=350)&(self.wav<=1039.5)]
+
+                # self.INSpec = self.INSpec[(self.wav>=350)&(self.wav<=1039.5)]*calib_factor(wav)
+                # self.wav = self.wav[(self.wav>=350)&(self.wav<=1039.5)]
             else:
                 self.INSpec = self.INSpec/avgs
             return True
@@ -117,6 +144,13 @@ class Model():
             return False
 
     def acqOUTSpec(self,int_time, avgs):
+        dirname = os.path.dirname(__file__)
+        file_path = os.path.join(dirname, 'Intensity_Calibration.txt')
+        calibration = np.genfromtxt(file_path,skip_header=1)
+        wav_calib = calibration[:,0]
+        int_calib = calibration[:,1]
+        calib_factor = interp1d(wav_calib,int_calib)
+
         try:
         #Set integration time and initialize array to zero in order to average
             self.spec.integration_time_micros(int_time)
@@ -126,7 +160,12 @@ class Model():
                 self.OUTSpec += self.spec.intensities()
 
             if type(self.bckg) != type(None):
+
                 self.OUTSpec = self.OUTSpec/avgs - self.bckg
+                # self.wav = self.spec.wavelengths()
+                # wav = self.wav[(self.wav>=350)&(self.wav<=1039.5)]
+                # self.OUTSpec = self.OUTSpec[(self.wav>=350)&(self.wav<=1039.5)]*calib_factor(wav)
+                # self.wav = self.wav[(self.wav>=350)&(self.wav<=1039.5)]
             else:
                 self.OUTSpec =  self.OUTSpec/avgs
 
@@ -138,13 +177,22 @@ class Model():
     def calcPLQE(self,LaserBounds,PLBounds):
 
         if type(self.LaserSpec)!=type(None) and type(self.INSpec)!=type(None) and type(self.OUTSpec)!=type(None):        
+            try:
+                outcount = self.OUTSpec[(self.wav>=350)&(self.wav<=1039.5)] - self.bckg[(self.wav>=350)&(self.wav<=1039.5)]
+                wav = self.wav[(self.wav>=350)&(self.wav<=1039.5)]
 
-            outcount = self.OUTSpec[(self.wav>=350)&(self.wav<=1039.5)]
-            wav = self.wav[(self.wav>=350)&(self.wav<=1039.5)]
+                lasercount = self.LaserSpec[(self.wav>=350)&(self.wav<=1039.5)]- self.bckg[(self.wav>=350)&(self.wav<=1039.5)]
 
-            lasercount = self.LaserSpec[(self.wav>=350)&(self.wav<=1039.5)]
+                incount = self.INSpec[(self.wav>=350)&(self.wav<=1039.5)] - self.bckg[(self.wav>=350)&(self.wav<=1039.5)]
 
-            incount = self.INSpec[(self.wav>=350)&(self.wav<=1039.5)]
+            except TypeError:
+                outcount = self.OUTSpec[(self.wav>=350)&(self.wav<=1039.5)] 
+                wav = self.wav[(self.wav>=350)&(self.wav<=1039.5)]
+
+                lasercount = self.LaserSpec[(self.wav>=350)&(self.wav<=1039.5)]
+
+                incount = self.INSpec[(self.wav>=350)&(self.wav<=1039.5)]
+
 
             dirname = os.path.dirname(__file__)
             file_path = os.path.join(dirname, 'Intensity_Calibration.txt')
@@ -174,7 +222,7 @@ class Model():
             # Calc PLQE
             A = 1 - np.trapz(lasercountfiltin)/np.trapz(lasercountfiltout)
             self.n = 100*((np.trapz(plcountfiltin) - (1 - A)*np.trapz(plcountfiltout))/(np.trapz(lasercountfiltempty)*A))
-            self.n = round(n, 2)
+            self.n = round(self.n, 2)
             return self.n, True
         else:
             return None, False

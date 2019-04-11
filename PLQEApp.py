@@ -34,6 +34,8 @@ class MainWindowUIClass( Ui_MainWindow ):
         '''
         self.debugTextBrowser.append( msg )
 
+
+    #a toggle function to keep track if the spectrometer has been connected
     @pyqtSlot()
     def toggle(self):
         self._toggle = not self._toggle
@@ -81,22 +83,29 @@ class MainWindowUIClass( Ui_MainWindow ):
         self.fileName = self.filenameDisplay.text()
 
         #Check to see if file exists and prompt the user to overwrite or not
-        if self.model.fileExists(self.dir_,self.fileName):
+        # try:
+        if self.fileName=='':
 
-            ovrwrite_msg = "File already exists. Overwrite?"
-            reply = QtGui.QMessageBox.question(self, 'Message', ovrwrite_msg, QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
+            self.NameFileDialog()
+        else:
 
-            if reply == QtGui.QMessageBox.Yes:
+            if self.model.fileExists(self.dir_,self.fileName):
+
+                reply = self.OverWriteDialog()
+
+                if reply == QtGui.QMessageBox.Yes:
+                    try:
+                        self.model.writeFile(self.dir_,self.fileName)
+                    except NoSpectraToProcess:
+                        self.PLQEerrorDialog()
+
+            else:
                 try:
                     self.model.writeFile(self.dir_,self.fileName)
                 except NoSpectraToProcess:
                     self.PLQEerrorDialog()
-
-        else:
-            try:
-                self.model.writeFile(self.dir_,self.fileName)
-            except NoSpectraToProcess:
-                self.PLQEerrorDialog()
+        # except TypeError:
+            # self.PLQEerrorDialog()
 
 
         # self.debugPrint( "Save button pressed" )
@@ -178,6 +187,19 @@ class MainWindowUIClass( Ui_MainWindow ):
         error_dialog.setWindowTitle('Error')
         error_dialog.exec_()
 
+    def NameFileDialog(self):
+        error_dialog = QtGui.QMessageBox()
+        error_dialog.setIcon(QtGui.QMessageBox.Critical)
+        error_dialog.setText('Please name your file')
+        error_dialog.setWindowTitle('Error')
+        error_dialog.exec_()
+
+    def OverWriteDialog(self):
+        ovrwrite_msg = "File already exists. Overwrite?"
+        error = QtGui.QMessageBox()
+        reply = error.question(error,'Message', ovrwrite_msg, error.No, error.Yes)
+
+        return reply
 
 def AppExec(app,ui):
     app.exec_()
