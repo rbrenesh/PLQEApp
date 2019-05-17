@@ -20,7 +20,7 @@ class MainWindowUIClass(QtWidgets.QMainWindow,Ui_MainWindow ):
         self.model = Model()
         self._toggle = False
         self.setupUi(self)
-        
+
     def setupUi( self, MW ):
         ''' Setup the UI of the super class, and add here code
         that relates to the way we want our UI to operate.
@@ -59,7 +59,7 @@ class MainWindowUIClass(QtWidgets.QMainWindow,Ui_MainWindow ):
 
         #check if system is running Windows to see which filepath format we need
         if 'nt' == os.name:
-            self.calibdir = 'allo'
+            self.calibdir = 'C:\\Users\\TCSPC\\Documents\\Calibration Files\\Intensity_Calibration_1000umFiber.txt'
             self.dir_ = 'C:\\'
             self.calibFileDisp.setText(self.calibdir)
         else:
@@ -69,7 +69,7 @@ class MainWindowUIClass(QtWidgets.QMainWindow,Ui_MainWindow ):
         # self.calibBrowseButton.clicked.connect(self.calibBrowseSlot)
         # self.connectBox.clicked.connect(self.toggle)
 
-        # close the lower part of the splitter to hide the 
+        # close the lower part of the splitter to hide the
         # debug window under normal operations
         # self.splitter.setSizes([300, 0])
 
@@ -296,7 +296,7 @@ class MainWindowUIClass(QtWidgets.QMainWindow,Ui_MainWindow ):
 
     def get_rbbounds(self):
         return self.rb.getRegion() #min_X, max_X
-    
+
     def plotlaser(self,x,y):
         try:
             self.laser.clear()

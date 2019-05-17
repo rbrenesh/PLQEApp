@@ -5,3 +5,5 @@ RB120_HPA_PLQE_bckg.txt
 RB120_HPA_PLQE_Sample1_Spot1_in.txt
 Rhodamine_calibration_in.txt
 mainwindow_old.py
+__pycache__/model.cpython-36.pyc
+__pycache__/mainwindow.cpython-36.pyc
