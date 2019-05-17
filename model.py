@@ -8,8 +8,13 @@ import numpy as np
 import seabreeze.spectrometers as sb
 from seabreeze.cseabreeze.wrapper import SeaBreezeError
 from scipy.interpolate import interp1d
+from scipy.ndimage import gaussian_filter1d
+import matplotlib.pyplot as plt
 
 class NoSpectraToProcess(Exception):
+    pass
+
+class NoSignal(Exception):
     pass
 
 class Model():
@@ -25,6 +30,22 @@ class Model():
         self.progress= 0
         self.connected = False
         self.n = 0
+        self.filtbckg = None
+        self.filtLaserSpec = None
+        self.filtINSpec = None
+        self.filtOUTSpec = None
+        self.laserwavfilt = None
+        self.plwavfilt = None
+        self.plcountfiltout = None
+        self.lasercountfiltout = None
+        self.lasercountfiltin = None
+        self.plcountfiltin = None
+        self.lasercountfiltempty = None
+        self.laserbckg = None
+        self.inplbckg = None
+        self.outplbckg = None
+        self.signal =  False
+
 
     def fileExists(self,directory,fileName):
         if ".txt" not in fileName:
@@ -88,12 +109,12 @@ class Model():
 
     def acqLaserSpec(self,int_time, avgs):
 
-        dirname = os.path.dirname(__file__)
-        file_path = os.path.join(dirname, 'Intensity_Calibration.txt')
-        calibration = np.genfromtxt(file_path,skip_header=1)
-        wav_calib = calibration[:,0]
-        int_calib = calibration[:,1]
-        calib_factor = interp1d(wav_calib,int_calib)
+        # dirname = os.path.dirname(__file__)
+        # file_path = os.path.join(dirname, 'Intensity_Calibration.txt')
+        # calibration = np.genfromtxt(file_path,skip_header=1)
+        # wav_calib = calibration[:,0]
+        # int_calib = calibration[:,1]
+        # calib_factor = interp1d(wav_calib,int_calib)
         try:
         #Set integration time and initialize array to zero in order to average
             self.spec.integration_time_micros(int_time)
@@ -102,26 +123,28 @@ class Model():
                 self.LaserSpec += self.spec.intensities()
                 self.progress = int(i/avgs)
 
-            if type(self.bckg) != type(None):
-                self.LaserSpec = self.LaserSpec/avgs - self.bckg
-                # self.wav = self.spec.wavelengths()
-                # wav = self.wav[(self.wav>=350)&(self.wav<=1039.5)]
+            self.LaserSpec = self.LaserSpec/avgs
+            self.signal =  False
+            # if type(self.bckg) != type(None):
+            #     self.LaserSpec = self.LaserSpec/avgs - self.bckg
+            #     # self.wav = self.spec.wavelengths()
+            #     # wav = self.wav[(self.wav>=350)&(self.wav<=1039.5)]
 
-                # self.LaserSpec = self.LaserSpec[(self.wav>=350)&(self.wav<=1039.5)]*calib_factor(wav)
-                # self.wav = self.wav[(self.wav>=350)&(self.wav<=1039.5)]
-            else:
-                self.LaserSpec = self.LaserSpec/avgs
+            #     # self.LaserSpec = self.LaserSpec[(self.wav>=350)&(self.wav<=1039.5)]*calib_factor(wav)
+            #     # self.wav = self.wav[(self.wav>=350)&(self.wav<=1039.5)]
+            # else:
+            #     self.LaserSpec = self.LaserSpec/avgs
             return True
         except (SeaBreezeError,AttributeError):
             return False
 
     def acqINSpec(self,int_time, avgs):
-        dirname = os.path.dirname(__file__)
-        file_path = os.path.join(dirname, 'Intensity_Calibration.txt')
-        calibration = np.genfromtxt(file_path,skip_header=1)
-        wav_calib = calibration[:,0]
-        int_calib = calibration[:,1]
-        calib_factor = interp1d(wav_calib,int_calib)
+        # dirname = os.path.dirname(__file__)
+        # file_path = os.path.join(dirname, 'Intensity_Calibration.txt')
+        # calibration = np.genfromtxt(file_path,skip_header=1)
+        # wav_calib = calibration[:,0]
+        # int_calib = calibration[:,1]
+        # calib_factor = interp1d(wav_calib,int_calib)
 
         try:
         #Set integration time and initialize array to zero in order to average
@@ -130,26 +153,29 @@ class Model():
 
             for i in range(avgs):
                 self.INSpec += self.spec.intensities()
-            if type(self.bckg) != type(None):
-                self.INSpec = self.INSpec/avgs - self.bckg
-                # self.wav = self.spec.wavelengths()
-                # wav = self.wav[(self.wav>=350)&(self.wav<=1039.5)]
 
-                # self.INSpec = self.INSpec[(self.wav>=350)&(self.wav<=1039.5)]*calib_factor(wav)
-                # self.wav = self.wav[(self.wav>=350)&(self.wav<=1039.5)]
-            else:
-                self.INSpec = self.INSpec/avgs
+            self.INSpec = self.INSpec/avgs
+            self.signal =  False
+            # if type(self.bckg) != type(None):
+            #     self.INSpec = self.INSpec/avgs - self.bckg
+            #     # self.wav = self.spec.wavelengths()
+            #     # wav = self.wav[(self.wav>=350)&(self.wav<=1039.5)]
+
+            #     # self.INSpec = self.INSpec[(self.wav>=350)&(self.wav<=1039.5)]*calib_factor(wav)
+            #     # self.wav = self.wav[(self.wav>=350)&(self.wav<=1039.5)]
+            # else:
+            #     self.INSpec = self.INSpec/avgs
             return True
         except (SeaBreezeError,AttributeError):
             return False
 
     def acqOUTSpec(self,int_time, avgs):
-        dirname = os.path.dirname(__file__)
-        file_path = os.path.join(dirname, 'Intensity_Calibration.txt')
-        calibration = np.genfromtxt(file_path,skip_header=1)
-        wav_calib = calibration[:,0]
-        int_calib = calibration[:,1]
-        calib_factor = interp1d(wav_calib,int_calib)
+        # dirname = os.path.dirname(__file__)
+        # file_path = os.path.join(dirname, 'Intensity_Calibration.txt')
+        # calibration = np.genfromtxt(file_path,skip_header=1)
+        # wav_calib = calibration[:,0]
+        # int_calib = calibration[:,1]
+        # calib_factor = interp1d(wav_calib,int_calib)
 
         try:
         #Set integration time and initialize array to zero in order to average
@@ -159,71 +185,153 @@ class Model():
             for i in range(avgs):
                 self.OUTSpec += self.spec.intensities()
 
-            if type(self.bckg) != type(None):
 
-                self.OUTSpec = self.OUTSpec/avgs - self.bckg
-                # self.wav = self.spec.wavelengths()
-                # wav = self.wav[(self.wav>=350)&(self.wav<=1039.5)]
-                # self.OUTSpec = self.OUTSpec[(self.wav>=350)&(self.wav<=1039.5)]*calib_factor(wav)
-                # self.wav = self.wav[(self.wav>=350)&(self.wav<=1039.5)]
-            else:
-                self.OUTSpec =  self.OUTSpec/avgs
-
+            self.OUTSpec =  self.OUTSpec/avgs
+            self.signal =  False
 
             return True
         except (SeaBreezeError,AttributeError):
             return False
 
-    def calcPLQE(self,LaserBounds,PLBounds):
-
-        if type(self.LaserSpec)!=type(None) and type(self.INSpec)!=type(None) and type(self.OUTSpec)!=type(None):        
-            try:
-                outcount = self.OUTSpec[(self.wav>=350)&(self.wav<=1039.5)] - self.bckg[(self.wav>=350)&(self.wav<=1039.5)]
-                wav = self.wav[(self.wav>=350)&(self.wav<=1039.5)]
-
-                lasercount = self.LaserSpec[(self.wav>=350)&(self.wav<=1039.5)]- self.bckg[(self.wav>=350)&(self.wav<=1039.5)]
-
-                incount = self.INSpec[(self.wav>=350)&(self.wav<=1039.5)] - self.bckg[(self.wav>=350)&(self.wav<=1039.5)]
-
-            except TypeError:
-                outcount = self.OUTSpec[(self.wav>=350)&(self.wav<=1039.5)] 
-                wav = self.wav[(self.wav>=350)&(self.wav<=1039.5)]
-
-                lasercount = self.LaserSpec[(self.wav>=350)&(self.wav<=1039.5)]
-
-                incount = self.INSpec[(self.wav>=350)&(self.wav<=1039.5)]
 
 
-            dirname = os.path.dirname(__file__)
-            file_path = os.path.join(dirname, 'Intensity_Calibration.txt')
-            calibration = np.genfromtxt(file_path,skip_header=1)
+    def thresholding_algo(self,y,bckg,lag, threshold, influence):
+        signals = np.zeros(len(y))
+        filteredY = np.array(y)
+        avgFilter = [0]*len(y)
+        stdFilter = [0]*len(y)
+    #    avgFilter[lag - 1] = np.mean(y[0:lag])
+        avgFilter[lag - 1] = np.mean(bckg[0:lag])
+    #    stdFilter[lag - 1] = np.std(y[0:lag])
+        stdFilter[lag - 1] = np.std(bckg[0:lag])
+        for i in range(lag, len(y)):
+            if abs(y[i] - avgFilter[i-1]) > threshold * stdFilter [i-1]:
+                if y[i] > avgFilter[i-1]:
+                    signals[i] = 1
+                else:
+                    signals[i] = -1
+
+                filteredY[i] = influence * y[i] + (1 - influence) * filteredY[i-1]
+    #            avgFilter[i] = np.mean(filteredY[(i-lag+1):i+1])
+                avgFilter[i] = np.mean(bckg[(i-lag+1):i+1])
+    #            stdFilter[i] = np.std(filteredY[(i-lag+1):i+1])
+                stdFilter[i] = np.std(bckg[(i-lag+1):i+1])
+            else:
+                signals[i] = 0
+                filteredY[i] = y[i]
+    #            avgFilter[i] = np.mean(filteredY[(i-lag+1):i+1])
+                avgFilter[i] = np.mean(bckg[(i-lag+1):i+1])
+    #            stdFilter[i] = np.std(filteredY[(i-lag+1):i+1])
+                stdFilter[i] = np.std(bckg[(i-lag+1):i+1])
+
+        return dict(signals = np.asarray(signals),
+                avgFilter = np.asarray(avgFilter),
+                stdFilter = np.asarray(stdFilter))
+    
+    
+    def find_idx(array,value):
+        return (np.abs(array - value)).argmin()
+
+    def detect_signal(self,LaserBounds,PLBounds,calib_filepath,inplthreshold,outplthreshold,laserthreshold):
+        
+        #returns arrays with detected signals for laser and inPL, outPL
+        try:
+
+            wav = self.wav[(self.wav>=350)&(self.wav<=1039.5)]
+            lasercount = gaussian_filter1d(self.LaserSpec[(self.wav>=350)&(self.wav<=1039.5)],sigma=5,order=0,axis=0)
+            outcount = gaussian_filter1d(self.OUTSpec[(self.wav>=350)&(self.wav<=1039.5)],sigma=5,order=0,axis=0)
+            incount = gaussian_filter1d(self.INSpec[(self.wav>=350)&(self.wav<=1039.5)],sigma=5,order=0,axis=0)
+            self.filtbckg = gaussian_filter1d(self.bckg[(self.wav>=350)&(self.wav<=1039.5)],sigma=5, order=0,axis=0)
+
+
+            calibration = np.genfromtxt(calib_filepath,skip_header=1)
             wav_calib = calibration[:,0]
             int_calib = calibration[:,1]
 
             calib_factor = interp1d(wav_calib,int_calib)
 
-            #Get wavelength ranges for laser and PL
-            laserwavfilt = wav[(wav >= LaserBounds[0]) & (wav <=LaserBounds[1])] # Laser wavelength range
-            plwavfilt = wav[(wav >= PLBounds[0]) & (wav <=PLBounds[1])]
 
-            #OUT
-            lasercountfiltout = outcount[(wav >= LaserBounds[0]) & (wav <=LaserBounds[1])]*calib_factor(laserwavfilt) # Counts in laser wavelength range
+            self.laserwavfilt = wav[(wav >= LaserBounds[0]) & (wav <=LaserBounds[1])]
+            self.plwavfilt = wav[(wav >= PLBounds[0]) & (wav <=PLBounds[1])]
 
-            plcountfiltout = outcount[(wav >= PLBounds[0]) & (wav <=PLBounds[1])]*calib_factor(plwavfilt) # Counts in PL wavelength range
 
-            # IN
-            lasercountfiltin = incount[(wav >= LaserBounds[0]) & (wav <=LaserBounds[1])]*calib_factor(laserwavfilt) # Counts in laser wavelength range
-            plcountfiltin = incount[(wav >= PLBounds[0]) & (wav <=PLBounds[1])]*calib_factor(plwavfilt) # Counts in PL wavelength range
+            self.plcountfiltout = outcount[(wav >= PLBounds[0]) & (wav <=PLBounds[1])]
+            self.lasercountfiltout = outcount[(wav >= LaserBounds[0]) & (wav <=LaserBounds[1])]
 
-            # Empty/Laser
-            lasercountfiltempty = lasercount[(wav >= LaserBounds[0]) & (wav <=LaserBounds[1])]*calib_factor(laserwavfilt) # Counts in laser wavelength range
-            plcountfiltempty = lasercount[(wav >= PLBounds[0]) & (wav <=PLBounds[1])]*calib_factor(plwavfilt) # Counts in PL wavelength range
+            self.lasercountfiltin = incount[(wav >= LaserBounds[0]) & (wav <=LaserBounds[1])]
+            self.plcountfiltin = incount[(wav >= PLBounds[0]) & (wav <=PLBounds[1])]
 
-            # Calc PLQE
-            A = 1 - np.trapz(lasercountfiltin)/np.trapz(lasercountfiltout)
-            self.n = 100*((np.trapz(plcountfiltin) - (1 - A)*np.trapz(plcountfiltout))/(np.trapz(lasercountfiltempty)*A))
-            self.n = round(self.n, 2)
-            return self.n, True
+            self.lasercountfiltempty = lasercount[(wav >= LaserBounds[0]) & (wav <=LaserBounds[1])]
+
+            # print(np.shape(self.plcountfiltin))
+            # print(np.shape(self.filtbckg[(wav >= PLBounds[0]) & (wav <=PLBounds[1])]))
+
+            inpl_detect = self.thresholding_algo(self.plcountfiltin,self.filtbckg[(wav >= PLBounds[0]) & (wav <=PLBounds[1])],150,inplthreshold,0)
+            outpl_detect = self.thresholding_algo(self.plcountfiltout,self.filtbckg[(wav >= PLBounds[0]) & (wav <=PLBounds[1])],150,outplthreshold,0)
+            laser_detect = self.thresholding_algo(self.lasercountfiltempty,self.filtbckg[(wav >= LaserBounds[0]) & (wav <=LaserBounds[1])],150,laserthreshold,0)
+
+
+            inpl_detect_idx = np.where(np.abs(inpl_detect["signals"])==1)[0]
+            outpl_detect_idx = np.where(np.abs(outpl_detect["signals"])==1)[0]
+            laser_detect_idx = np.where(np.abs(laser_detect["signals"])==1)[0]
+
+
+
+            self.laserbckg = self.filtbckg[(wav >= LaserBounds[0]) & (wav <=LaserBounds[1])]
+            self.inplbckg = self.filtbckg[(wav >= PLBounds[0]) & (wav <=PLBounds[1])]
+            self.outplbckg = self.filtbckg[(wav >= PLBounds[0]) & (wav <=PLBounds[1])]
+
+            laserx = self.laserwavfilt[laser_detect_idx]
+            lasery = self.lasercountfiltempty[laser_detect_idx] - self.laserbckg[laser_detect_idx]
+            inplx = self.plwavfilt[inpl_detect_idx]
+            inply = self.plcountfiltin[inpl_detect_idx] - self.inplbckg[inpl_detect_idx]
+            outplx = self.plwavfilt[outpl_detect_idx]
+            outply = self.plcountfiltout[outpl_detect_idx] - self.outplbckg[outpl_detect_idx]
+
+            print(self.plwavfilt[outpl_detect_idx])
+            print(calib_factor(self.plwavfilt[outpl_detect_idx]))
+
+            self.plcountfiltout[outpl_detect_idx] = self.plcountfiltout[outpl_detect_idx]*calib_factor(self.plwavfilt[outpl_detect_idx])
+            self.plcountfiltin[inpl_detect_idx] = self.plcountfiltin[inpl_detect_idx]*calib_factor(self.plwavfilt[inpl_detect_idx])
+            self.lasercountfiltempty[laser_detect_idx] = self.lasercountfiltempty[laser_detect_idx]*calib_factor(self.laserwavfilt[laser_detect_idx])
+            self.lasercountfiltout[laser_detect_idx] = self.lasercountfiltout[laser_detect_idx]*calib_factor(self.laserwavfilt[laser_detect_idx])
+            self.lasercountfiltin[laser_detect_idx] = self.lasercountfiltin[laser_detect_idx]*calib_factor(self.laserwavfilt[laser_detect_idx])
+
+
+            if len(laser_detect_idx)>1 and len(inpl_detect_idx)>1:
+                self.signal =  True
+            else:
+                self.signal = False
+
+            return laserx, lasery, inplx, inply, outplx, outply
+
+        except TypeError:
+            raise NoSpectraToProcess()
+        # except Exception as e:
+            # raise e
+        
+        
+
+    def calcPLQE(self,LaserBounds,PLBounds,calib_filepath):
+
+        if self.signal != True:
+            raise NoSignal()
+
+        if type(self.LaserSpec)!=type(None) and type(self.INSpec)!=type(None) and type(self.OUTSpec)!=type(None):        
+            try:
+                # Calc PLQE
+                A = 1 - np.trapz(self.lasercountfiltin-self.laserbckg)/np.trapz(self.lasercountfiltout-self.laserbckg)
+                # plt.figure()
+                # plt.plot(self.lasercountfiltin-self.laserbckg)
+                # plt.plot(self.lasercountfiltout-self.laserbckg)
+                # plt.show()
+                # print(np.trapz(self.lasercountfiltin-self.laserbckg))
+                # print(np.trapz(self.lasercountfiltout-self.laserbckg))
+                self.n = 100*((np.trapz(self.plcountfiltin-self.inplbckg) - (1 - A)*np.trapz(self.plcountfiltout-self.outplbckg))/(np.trapz(self.lasercountfiltempty-self.laserbckg)*A))
+                self.n = round(self.n, 2)
+                return self.n, True
+            except Exception as e:
+                raise e
         else:
             return None, False
 
