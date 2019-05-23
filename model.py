@@ -96,7 +96,7 @@ class Model():
     def acqBckg(self,int_time, avgs):
         try:
         #Set integration time and initialize array to zero in order to average
-            self.spec.integration_time_micros(int_time)
+            self.spec.integration_time_micros(int_time*1000)
             self.bckg = np.zeros(self.spec.pixels)
             #Acquire avgs number of arrays
             for i in range(avgs):
@@ -117,7 +117,7 @@ class Model():
         # calib_factor = interp1d(wav_calib,int_calib)
         try:
         #Set integration time and initialize array to zero in order to average
-            self.spec.integration_time_micros(int_time)
+            self.spec.integration_time_micros(int_time*1000)
             self.LaserSpec = np.zeros(self.spec.pixels)
             for i in range(avgs):
                 self.LaserSpec += self.spec.intensities()
@@ -148,7 +148,7 @@ class Model():
 
         try:
         #Set integration time and initialize array to zero in order to average
-            self.spec.integration_time_micros(int_time)
+            self.spec.integration_time_micros(int_time*1000)
             self.INSpec = np.zeros(self.spec.pixels)
 
             for i in range(avgs):
@@ -179,7 +179,7 @@ class Model():
 
         try:
         #Set integration time and initialize array to zero in order to average
-            self.spec.integration_time_micros(int_time)
+            self.spec.integration_time_micros(int_time*1000)
             self.OUTSpec = np.zeros(self.spec.pixels)
 
             for i in range(avgs):
