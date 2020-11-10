@@ -6,7 +6,10 @@
 import os
 import numpy as np
 import seabreeze.spectrometers as sb
-from seabreeze.cseabreeze.wrapper import SeaBreezeError
+try:
+	from seabreeze.cseabreeze.wrapper import SeaBreezeError
+except ModuleNotFoundError:
+	from seabreeze.pyseabreeze.exceptions import SeaBreezeError
 from scipy.interpolate import interp1d
 from scipy.ndimage import gaussian_filter1d
 import matplotlib.pyplot as plt

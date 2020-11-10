@@ -5,7 +5,10 @@ from PyQt5.QtCore import QObject, pyqtSlot
 import pyqtgraph as pg
 from mainwindow import Ui_MainWindow
 from model import Model, NoSpectraToProcess, NoSignal
-from seabreeze.cseabreeze.wrapper import SeaBreezeError
+try:
+    from seabreeze.cseabreeze.wrapper import SeaBreezeError
+except ModuleNotFoundError:
+    from seabreeze.pyseabreeze.exceptions import SeaBreezeError
 import os, sys
 
 class MainWindowUIClass(QtWidgets.QMainWindow,Ui_MainWindow ):
