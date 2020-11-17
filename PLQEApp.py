@@ -62,11 +62,13 @@ class MainWindowUIClass(QtWidgets.QMainWindow,Ui_MainWindow ):
 
         #check if system is running Windows to see which filepath format we need
         if 'nt' == os.name:
-            self.calibdir = 'C:\\Users\\TCSPC\\Documents\\Calibration Files\\Intensity_Calibration_1000umFiber.txt'
+            # self.calibdir = 'C:\\Users\\TCSPC\\Documents\\Calibration Files\\Intensity_Calibration_1000umFiber.txt'
+            self.calibdir = os.getcwd() + '\\IntegratingSphere_Intensity_Calibration_1umFiber.txt'
             self.dir_ = 'C:\\'
             self.calibFileDisp.setText(self.calibdir)
         else:
-            self.calibdir = '/Users/robertobrenes/Dropbox (MIT)/Roberto/Integrating Sphere Calibration/Intensity_Calibration_1umFiber.txt'
+            # self.calibdir = '/Users/robertobrenes/Dropbox (MIT)/Roberto/Integrating Sphere Calibration/Intensity_Calibration_1umFiber.txt'
+            self.calibdir = os.getcwd() + '/IntegratingSphere_Intensity_Calibration_1umFiber.txt'
             self.dir_ = '/'
             self.calibFileDisp.setText(self.calibdir)
         # self.calibBrowseButton.clicked.connect(self.calibBrowseSlot)
